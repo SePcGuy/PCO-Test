@@ -20,6 +20,9 @@ adjustmentFactor = 0.5 # scalar to be multiplied to your adjustment; here if you
 accuracyMargin = 0 # in terms of pi; disable accuracyMargin for systems with more than 2 nodes! scale by minimizing adjustmentFactor
 divisionFactor = 2 # not used anymore
 
+
+
+# This function operates as the counter. The sleep statement is required to avoid crashing the nanos.
 def counter():
 	global count, countMax, start, lastCountEnd, outStatus, clockResets
 	start = time.time()
@@ -38,10 +41,11 @@ def counter():
 		elif outStatus == 1 and count - lastCountEnd >= countMax/20:
 			GPIO.output(chanOutput, GPIO.LOW)
 			outStatus = 0;
-		time.sleep(0.0001)
+		time.sleep(0.0001) # Probably can be larger
 
 
 
+# This function adjusts the phase; the -0.02 pi is to account for processing delays, doesn't work perfectly
 def adjust(phase):
 	global lastCountEnd, divisionFactor, adjustmentFactor
 	if phase < math.pi:
@@ -55,6 +59,8 @@ def adjust(phase):
 
 
 
+# This function is called when the Jetson detects rising edge. Unfortunately, it is not limited to the input pin & I can't figure out how to do so.
+# Making a refractory range would cause instability, so I just use 0.
 def align(chanInput):
 	global count, countMax, lastCountEnd, peerSpotted, peerInitialDiff, accuracyMargin, refractoryRange
 	detectTime = time.time()
@@ -69,6 +75,7 @@ def align(chanInput):
 
 
 
+# Setups, events, counter call, and cleanup
 def main():
 	global chanInput, chanOutput	
 

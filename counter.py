@@ -50,7 +50,9 @@ def adjust(phase):
 	global lastCountEnd, divisionFactor, adjustmentFactor
 	if phase < math.pi:
 		adjustment = -phase
-	elif phase >= math.pi: # and phase < 2 * math.pi - accuracyMargin * math.pi:
+	elif phase == math.pi:
+		adjustment = 0
+	elif phase > math.pi: # and phase < 2 * math.pi - accuracyMargin * math.pi:
 		adjustment = -phase + 2 * math.pi - 0.02 * math.pi# 0.02
 
 
